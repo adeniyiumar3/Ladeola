@@ -1,0 +1,15 @@
+{
+  "name": "La'deola Cakes_n_Confectionery",
+  "short_name": "La'deola",
+  "description": "Savoring moments with beautiful patisserie treats. Browse Eid packages, cupcakes, banana bread and pastries, then order straight to WhatsApp.",
+  "start_url": "index.html",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#FFFDFC",
+  "theme_color": "#E6178C",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "ladeola_logo.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any maskable" },
+    { "src": "picture3.jpeg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any" }
+  ]
+}
