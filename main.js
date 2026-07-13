@@ -6,21 +6,6 @@
 (function(){
   "use strict";
 
-  // If accessed from a mobile browser, force a narrow (mobile) layout viewport
-  (function enforceMobileViewport(){
-    try{
-      const ua = navigator.userAgent || '';
-      const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-      if(isMobile){
-        const mv = document.querySelector('meta[name="viewport"]');
-        if(mv){
-          // Force a mobile-style layout width so the site appears 'shrunk' to mobile size
-          mv.setAttribute('content', 'width=360, initial-scale=1.0, viewport-fit=cover');
-        }
-      }
-    }catch(e){}
-  })();
-
   const WHATSAPP_NUMBER = "2349018603218"; // La'deola Cakes_n_Confectionery — 09018603218 in international format
 
   /* ---------- Small helper: SVG placeholder "photos" as data URIs ----------
