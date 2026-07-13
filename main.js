@@ -652,6 +652,21 @@
   document.getElementById("heroWaBtn").addEventListener("click", openGeneralWhatsApp);
   document.getElementById("footerWaLink").addEventListener("click", e=>{ e.preventDefault(); openGeneralWhatsApp(); });
 
+  /* ---------- Mobile nav toggle ---------- */
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const mobileNav = document.getElementById("mobileNav");
+  const mobileNavClose = document.getElementById("mobileNavClose");
+  if(mobileMenuBtn && mobileNav){
+    mobileMenuBtn.addEventListener("click", ()=>{
+      const open = mobileNav.classList.toggle("open");
+      mobileNav.setAttribute("aria-hidden", String(!open));
+      mobileMenuBtn.setAttribute("aria-expanded", String(open));
+    });
+    mobileNavClose && mobileNavClose.addEventListener("click", ()=>{ mobileNav.classList.remove("open"); mobileNav.setAttribute("aria-hidden","true"); mobileMenuBtn.setAttribute("aria-expanded","false"); });
+    // close when clicking a link
+    mobileNav.querySelectorAll(".mobile-links a").forEach(a=> a.addEventListener("click", ()=>{ mobileNav.classList.remove("open"); mobileNav.setAttribute("aria-hidden","true"); mobileMenuBtn.setAttribute("aria-expanded","false"); }));
+  }
+
   /* ---------- Header scroll shadow + back-to-top ---------- */
   const header = document.getElementById("siteHeader");
   const backTop = document.getElementById("backTop");

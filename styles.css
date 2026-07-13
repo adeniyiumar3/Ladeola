@@ -386,6 +386,7 @@ footer a{color:inherit;}
   .steps{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr 1fr;}
   nav.links{display:none;}
+  .mobile-menu-btn{display:flex;}
   .header-actions{gap:8px;}
   .brand-logo{width:66px; height:66px; padding:6px;}
   .brand-logo--large{width:23px; height:23px; padding:4px;}
@@ -394,6 +395,15 @@ footer a{color:inherit;}
   .product-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));}
   .order-items{max-height:none;}
 }
+
+/* Mobile nav drawer */
+.mobile-menu-btn{display:none; width:44px; height:44px; align-items:center; justify-content:center;}
+.mobile-nav{position:fixed; inset:0; z-index:120; display:none; align-items:flex-start;}
+.mobile-nav.open{display:flex;}
+.mobile-nav-inner{background:var(--paper); width:100%; max-width:420px; padding:20px; box-shadow:var(--shadow); border-radius:0 0 12px 12px; margin-top:0;}
+.mobile-links{display:flex; flex-direction:column; gap:12px; padding-top:18px;}
+.mobile-links a{font-size:18px; font-weight:700; color:var(--ink); text-decoration:none; padding:12px 6px; border-bottom:1px solid var(--line);}
+.mobile-nav .modal-close{position:absolute; right:16px; top:12px; background:transparent; border:none; font-size:20px;}
 @media (max-width:720px){
   .wrap{padding:0 18px;}
   .hero{padding:36px 0 26px;}
