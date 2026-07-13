@@ -136,6 +136,14 @@
     try{ await platformStorage.set("layers-lagos:dark", on ? "1" : "0"); }catch(e){}
   }
 
+  function enforceMobileViewport(){
+    const meta = document.querySelector('meta[name="viewport"]');
+    if(!meta) return;
+    const isPhone = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 720;
+    const scale = isPhone ? 0.78 : 1.0;
+    meta.setAttribute('content', `width=device-width, initial-scale=${scale}, minimum-scale=${scale}, maximum-scale=1.0, viewport-fit=cover`);
+  }
+
   /* ---------- Rendering: filter chips ---------- */
   const filterChips = document.getElementById("filterChips");
   CATEGORIES.forEach(cat=>{
@@ -320,7 +328,7 @@
       <img src="${p.img}" alt="${p.name}" style="border-radius:14px; margin-bottom:14px;" loading="lazy">
       <h3>${p.name}</h3>
       <div class="m-price">${isSmallChops ? fmt(getSmallChopsTotal(modalDraft.smallChops)) : fmt(p.price)}</div>
-      <div style="font-size:15px; opacity:.9; margin-bottom:10px;">${isSmallChops ? `<strong>Price will be negotiated based on quantity.</strong>` : ""}</div>
+      <div style="font-size:16px; font-weight:700; opacity:.98; margin-bottom:10px; color:var(--plum);">${isSmallChops ? `<strong>Price will be negotiated based on quantity.</strong>` : ""}</div>
       <p style="font-size:13.5px; opacity:.75; line-height:1.5; margin-bottom:16px;">${p.desc}</p>
       ${isSmallChops ? `
       <div class="field-group">
@@ -375,9 +383,12 @@
       });
     }
     if(p.hasInscription){
-      productModal.querySelector("#inscriptionInput").addEventListener("input", e=>{
-        modalDraft.inscription = e.target.value;
-      });
+      const inscriptionInput = productModal.querySelector("#inscriptionInput");
+      if(inscriptionInput){
+        inscriptionInput.addEventListener("input", e=>{
+          modalDraft.inscription = e.target.value;
+        });
+      }
     }
     const lineTotal = productModal.querySelector("#lineTotal");
     function getModalTotal(){
@@ -407,20 +418,6 @@
         productModal.querySelector(`.item-minus[data-item="${item.id}"]`).addEventListener("click", ()=> updateCount(-1));
         productModal.querySelector(`.item-plus[data-item="${item.id}"]`).addEventListener("click", ()=> updateCount(1));
       });
-      productModal.querySelector("#inscriptionInput").addEventListener("input", e=>{
-        modalDraft.inscription = e.target.value;
-      });
-    }
-    if(p.flavours && p.id !== "small-chops"){
-      productModal.querySelectorAll("#flavourRow .opt").forEach(btn=>{
-        btn.addEventListener("click", ()=>{
-          productModal.querySelectorAll("#flavourRow .opt").forEach(b=>b.classList.remove("active"));
-          btn.classList.add("active");
-          modalDraft.flavour = btn.dataset.flavour;
-        });
-      });
-    }
-    if(p.hasInscription && p.id !== "small-chops"){
       productModal.querySelector("#inscriptionInput").addEventListener("input", e=>{
         modalDraft.inscription = e.target.value;
       });
@@ -705,6 +702,7 @@
   async function boot(){
     // Always start fresh on reload: clear persisted cart and scroll to top
     try{ await platformStorage.set("layers-lagos:cart", JSON.stringify([])); }catch(e){}
+    enforceMobileViewport();
     window.scrollTo({ top: 0 });
     await loadDarkMode();
     setIcon();
