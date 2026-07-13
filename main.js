@@ -81,7 +81,6 @@
 
   const CATEGORIES = [
     { id:"all", label:"All" },
-    { id:"packages", label:"Celebration Packages" },
     { id:"cupcakes", label:"Cupcakes" },
     { id:"bread", label:"Banana Bread" },
     { id:"savoury", label:"Savoury" },
@@ -123,19 +122,6 @@
       if(c && c.value) state.cart = JSON.parse(c.value);
     }catch(e){ /* no saved cart yet */ }
   }
-  async function loadDarkMode(){
-    try{
-      const d = await platformStorage.get("layers-lagos:dark");
-      // If user explicitly chose dark mode, enable it. If explicitly set to "0", ensure light mode.
-      if(d && d.value === "1"){ document.documentElement.classList.add("dark"); return; }
-      if(d && d.value === "0"){ document.documentElement.classList.remove("dark"); return; }
-    }catch(e){}
-    // Default to light mode: do not enable dark automatically.
-  }
-  async function saveDarkMode(on){
-    try{ await platformStorage.set("layers-lagos:dark", on ? "1" : "0"); }catch(e){}
-  }
-
   function enforceMobileViewport(){
     const meta = document.querySelector('meta[name="viewport"]');
     if(!meta) return;
@@ -144,23 +130,87 @@
     meta.setAttribute('content', `width=device-width, initial-scale=${scale}, minimum-scale=${scale}, maximum-scale=1.0, viewport-fit=cover`);
   }
 
-  /* ---------- Rendering: filter chips ---------- */
-  const filterChips = document.getElementById("filterChips");
-  CATEGORIES.forEach(cat=>{
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "chip" + (cat.id==="all" ? " active" : "");
-    b.textContent = cat.label;
-    b.dataset.cat = cat.id;
-    b.addEventListener("click", ()=>{
-      state.category = cat.id;
-      state.showAllProducts = false;
-      [...filterChips.children].forEach(c=>c.classList.remove("active"));
-      b.classList.add("active");
-      renderProducts();
+  /* ---------- Rendering: category dropdown ---------- */
+  const categoryToggle = document.getElementById("categoryToggle");
+  const categoryOptions = document.getElementById("categoryOptions");
+  const categorySelector = document.getElementById("categorySelector");
+
+  function closeCategoryDropdown(){
+    categoryToggle.setAttribute("aria-expanded", "false");
+    categoryOptions.style.display = "none";
+  }
+  function openCategoryDropdown(){
+    categoryToggle.setAttribute("aria-expanded", "true");
+    categoryOptions.style.display = "block";
+  }
+  function setCategoryLabel(label){
+    categoryToggle.firstChild.textContent = label + " ";
+  }
+
+  function renderCategoryDropdown(){
+    categoryOptions.innerHTML = "";
+    CATEGORIES.forEach(cat=>{
+      const item = document.createElement("div");
+      item.className = "select-option" + (state.category === cat.id ? " active" : "");
+      item.textContent = cat.label;
+      item.dataset.cat = cat.id;
+      item.role = "option";
+      item.addEventListener("click", ()=>{
+        state.category = cat.id;
+        state.showAllProducts = false;
+        setCategoryLabel(cat.label);
+        renderCategoryDropdown();
+        closeCategoryDropdown();
+        renderProducts();
+      });
+      categoryOptions.appendChild(item);
     });
-    filterChips.appendChild(b);
+  }
+
+  categoryToggle.addEventListener("click", ()=>{
+    if(categoryOptions.style.display === "block") closeCategoryDropdown();
+    else openCategoryDropdown();
   });
+  document.addEventListener("click", e=>{
+    if(!categorySelector.contains(e.target)) closeCategoryDropdown();
+  });
+  setCategoryLabel("All");
+  renderCategoryDropdown();
+
+  /* ---------- Hero slider ---------- */
+  const heroSlider = document.getElementById("heroSlider");
+  const heroDots = document.getElementById("heroDots");
+  const heroPrev = document.getElementById("heroPrev");
+  const heroNext = document.getElementById("heroNext");
+  const heroSlides = heroSlider ? Array.from(heroSlider.querySelectorAll(".hero-slide")) : [];
+  let heroIndex = 0;
+  let heroTimer = null;
+
+  function updateHeroSlider(index){
+    heroSlides.forEach((slide, i)=> slide.classList.toggle("active", i === index));
+    heroDots.querySelectorAll(".hero-dot").forEach((dot, i)=> dot.classList.toggle("active", i === index));
+    heroIndex = index;
+  }
+  function advanceHero(direction){
+    const nextIndex = (heroIndex + direction + heroSlides.length) % heroSlides.length;
+    updateHeroSlider(nextIndex);
+  }
+  function resetHeroTimer(){
+    if(heroTimer) clearInterval(heroTimer);
+    heroTimer = setInterval(()=> advanceHero(1), 4200);
+  }
+  if(heroSlides.length){
+    heroSlides.forEach((_, i)=>{
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "hero-dot" + (i===0 ? " active" : "");
+      dot.addEventListener("click", ()=>{ updateHeroSlider(i); resetHeroTimer(); });
+      heroDots.appendChild(dot);
+    });
+    heroPrev.addEventListener("click", ()=>{ advanceHero(-1); resetHeroTimer(); });
+    heroNext.addEventListener("click", ()=>{ advanceHero(1); resetHeroTimer(); });
+    resetHeroTimer();
+  }
 
   // Footer category list
   const footerCats = document.getElementById("footerCats");
@@ -673,22 +723,6 @@
   }, { passive:true });
   backTop.addEventListener("click", ()=> window.scrollTo({ top:0, behavior:"smooth" }));
 
-  /* ---------- Dark mode ---------- */
-  const darkToggle = document.getElementById("darkToggle");
-  const darkIcon = document.getElementById("darkIcon");
-  function setIcon(){
-    const isDark = document.documentElement.classList.contains("dark");
-    darkIcon.innerHTML = isDark
-      ? `<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>`
-      : `<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>`;
-  }
-  darkToggle.addEventListener("click", ()=>{
-    document.documentElement.classList.toggle("dark");
-    const isDark = document.documentElement.classList.contains("dark");
-    setIcon();
-    saveDarkMode(isDark);
-  });
-
   /* ---------- Service worker registration (PWA) ---------- */
   if("serviceWorker" in navigator){
     window.addEventListener("load", ()=>{
@@ -704,8 +738,6 @@
     try{ await platformStorage.set("layers-lagos:cart", JSON.stringify([])); }catch(e){}
     enforceMobileViewport();
     window.scrollTo({ top: 0 });
-    await loadDarkMode();
-    setIcon();
     await loadState();
     renderProducts();
     renderCart();
