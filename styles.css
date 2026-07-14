@@ -180,7 +180,7 @@ nav.links a:hover{opacity:1; color:var(--plum);}
 .btn img{width:16px; height:16px; margin-right:8px;}
 
 /* ============ HERO ============ */
-.hero{position:relative; overflow:hidden; padding:56px 0 var(--section-y-tablet);}
+.hero{position:relative; overflow:hidden; padding-top:56px; padding-bottom:var(--section-y-tablet);}
 .hero::after{content:''; position:absolute; inset:0; background:radial-gradient(circle at top right, rgba(246,211,249,0.35), transparent 18%), radial-gradient(circle at bottom left, rgba(255,215,238,0.25), transparent 15%); pointer-events:none;}
 .hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:54px; align-items:center; max-width:var(--container); margin:0 auto;}
 .hero-copy{min-width:0;}
@@ -208,7 +208,7 @@ nav.links a:hover{opacity:1; color:var(--plum);}
 .layer-divider{display:block; width:100%; height:auto; margin-top:-1px;}
 
 /* ============ SECTION LAYOUT ============ */
-.section{padding:var(--section-y) 0;}
+.section{padding-top:var(--section-y); padding-bottom:var(--section-y);}
 .section-head{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:32px; flex-wrap:wrap;}
 .section-head h2{font-size:clamp(26px,3.4vw,36px);}
 .section-head p{opacity:1; max-width:52ch; font-size:14.5px; margin-top:6px; color:var(--ink);}
@@ -391,7 +391,7 @@ footer a:hover{opacity:1; color:#fff;}
   .brand-text span{font-size:8.5px;}
 
   /* hero */
-  .hero{padding:32px 0 var(--section-y-mobile);}
+  .hero{padding-top:32px; padding-bottom:var(--section-y-mobile);}
   .hero h1{font-size:clamp(30px,8vw,42px); margin-bottom:16px;}
   .hero p.lede{font-size:15px; line-height:1.7; margin-bottom:22px;}
   .hero-ctas{flex-wrap:nowrap; gap:10px;}
