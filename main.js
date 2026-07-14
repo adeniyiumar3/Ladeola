@@ -122,14 +122,6 @@
       if(c && c.value) state.cart = JSON.parse(c.value);
     }catch(e){ /* no saved cart yet */ }
   }
-  function enforceMobileViewport(){
-    const meta = document.querySelector('meta[name="viewport"]');
-    if(!meta) return;
-    const isPhone = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 720;
-    const scale = isPhone ? 0.78 : 1.0;
-    meta.setAttribute('content', `width=device-width, initial-scale=${scale}, minimum-scale=${scale}, maximum-scale=1.0, viewport-fit=cover`);
-  }
-
   /* ---------- Rendering: category dropdown ---------- */
   const categoryToggle = document.getElementById("categoryToggle");
   const categoryOptions = document.getElementById("categoryOptions");
@@ -177,9 +169,8 @@
   setCategoryLabel("All");
   renderCategoryDropdown();
 
-  /* ---------- Hero slider ---------- */
+  /* ---------- Hero slider (prev/next + autoplay, no pagination dots) ---------- */
   const heroSlider = document.getElementById("heroSlider");
-  const heroDots = document.getElementById("heroDots");
   const heroPrev = document.getElementById("heroPrev");
   const heroNext = document.getElementById("heroNext");
   const heroSlides = heroSlider ? Array.from(heroSlider.querySelectorAll(".hero-slide")) : [];
@@ -188,7 +179,6 @@
 
   function updateHeroSlider(index){
     heroSlides.forEach((slide, i)=> slide.classList.toggle("active", i === index));
-    heroDots.querySelectorAll(".hero-dot").forEach((dot, i)=> dot.classList.toggle("active", i === index));
     heroIndex = index;
   }
   function advanceHero(direction){
@@ -200,13 +190,6 @@
     heroTimer = setInterval(()=> advanceHero(1), 4200);
   }
   if(heroSlides.length){
-    heroSlides.forEach((_, i)=>{
-      const dot = document.createElement("button");
-      dot.type = "button";
-      dot.className = "hero-dot" + (i===0 ? " active" : "");
-      dot.addEventListener("click", ()=>{ updateHeroSlider(i); resetHeroTimer(); });
-      heroDots.appendChild(dot);
-    });
     heroPrev.addEventListener("click", ()=>{ advanceHero(-1); resetHeroTimer(); });
     heroNext.addEventListener("click", ()=>{ advanceHero(1); resetHeroTimer(); });
     resetHeroTimer();
@@ -736,7 +719,6 @@
   async function boot(){
     // Always start fresh on reload: clear persisted cart and scroll to top
     try{ await platformStorage.set("layers-lagos:cart", JSON.stringify([])); }catch(e){}
-    enforceMobileViewport();
     window.scrollTo({ top: 0 });
     await loadState();
     renderProducts();
