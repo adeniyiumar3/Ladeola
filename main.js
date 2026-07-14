@@ -31,10 +31,10 @@
       desc:"Soft, buttery vanilla sponge, individually frosted.",
       img:"vanilla6.jpg" },
     { id:"cupcake-redvelvet", name:"Red Velvet Cupcakes (Pack of 6)", cat:"cupcakes", price:3000,
-      desc:"Classic red velvet with cream cheese frosting.",
+      desc:"Classic red velvet cupcakes.",
       img:"redvelvet6.jpg" },
     { id:"cupcake-chocolate", name:"Chocolate Cupcakes (Pack of 6)", cat:"cupcakes", price:3000,
-      desc:"Rich chocolate sponge, finished with chocolate buttercream.",
+      desc:"Rich chocolate sponge cupcakes.",
       img:"chocolate6.jpg" },
 
     /* ---------- Banana Bread category items ---------- */
@@ -45,17 +45,17 @@
 
     /* ---------- Plain Cakes category items ---------- */
     { id:"cake-vanilla", name:"Plain Vanilla Cake", cat:"plain-cakes", price:6000,
-      desc:"Classic vanilla sponge finished with smooth vanilla buttercream.",
+      desc:"Creamy vanilla cake.",
       img:"vanillaplain.jpg", hasInscription:true },
     { id:"fruit-cake", name:"Fruit cake", cat:"plain-cakes", price:7000,
-      desc:"Moist, homestyle banana bread — offered under Plain Cakes.",
+      desc:"Moist and rich Fruit Cakes.",
       img:"bananabreadplain.jpg" },
     
     { id:"cake-chocolate", name:"Chocolate Cake", cat:"plain-cakes", price:6500,
-      desc:"Rich chocolate sponge with chocolate buttercream.",
+      desc:"Rich and decadent chocolate cake.",
       img:"chocolateplain.jpg", hasInscription:true },
     { id:"cake-redvelvet", name:"Red Velvet Cake", cat:"plain-cakes", price:6500,
-      desc:"Classic red velvet with cream cheese frosting.",
+      desc:"Classic red velvet cake.",
       img:"redvelvetplain.jpg", hasInscription:true },
 
     { id:"small-chops", name:"Small Chops Pack", cat:"savoury", price:0,
