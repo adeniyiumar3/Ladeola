@@ -27,7 +27,7 @@
 
   /* ---------- Product catalogue — La'deola Cakes_n_Confectionery's real menu ---------- */
   const PRODUCTS = [
-    { id:"cupcake-vanilla", name:"Vanilla Cupcakes (Pack of 6)", cat:"cupcakes", price:2000,
+    { id:"cupcake-vanilla", name:"Vanilla Cupcakes (Pack of 6)", cat:"cupcakes", price:2500,
       desc:"Soft, buttery vanilla sponge, individually frosted.",
       img:"vanilla6.jpg" },
     { id:"cupcake-redvelvet", name:"Red Velvet Cupcakes (Pack of 6)", cat:"cupcakes", price:3000,
@@ -36,22 +36,25 @@
     { id:"cupcake-chocolate", name:"Chocolate Cupcakes (Pack of 6)", cat:"cupcakes", price:3000,
       desc:"Rich chocolate sponge, finished with chocolate buttercream.",
       img:"chocolate6.jpg" },
-    { id:"bread-chocochunk", name:"Choco Chunk Banana Bread", cat:"bread", price:1700,
-      desc:"Classic banana bread studded with chocolate chunks.",
-      img:"chocochunk.jpg", tag:"Fan favourite" },
+
+    /* ---------- Banana Bread category items ---------- */
+    { id:"banana-bread-mini", name:"Banana Bread (Mini)", cat:"bread", price:1500,
+      desc:"A personal-size loaf of our homestyle banana bread, made fresh in your choice of flavour.",
+      img:"picture4.jpg", flavours:["Plain","Coconut","Choco'Chunk","Chocolate"],
+      flavourPrices:{ "Plain":1500, "Coconut":1700, "Choco'Chunk":1700, "Chocolate":1900 } },
 
     /* ---------- Plain Cakes category items ---------- */
-    { id:"cake-vanilla", name:"Plain Vanilla Cake", cat:"plain-cakes", price:7000,
+    { id:"cake-vanilla", name:"Plain Vanilla Cake", cat:"plain-cakes", price:6000,
       desc:"Classic vanilla sponge finished with smooth vanilla buttercream.",
       img:"vanillaplain.jpg", hasInscription:true },
-    { id:"cake-banana-bread", name:"Plain Banana Bread", cat:"plain-cakes", price:1500,
+    { id:"fruit-cake", name:"Fruit cake", cat:"plain-cakes", price:7000,
       desc:"Moist, homestyle banana bread — offered under Plain Cakes.",
       img:"bananabreadplain.jpg" },
     
-    { id:"cake-chocolate", name:"Chocolate Cake", cat:"plain-cakes", price:7500,
+    { id:"cake-chocolate", name:"Chocolate Cake", cat:"plain-cakes", price:6500,
       desc:"Rich chocolate sponge with chocolate buttercream.",
       img:"chocolateplain.jpg", hasInscription:true },
-    { id:"cake-redvelvet", name:"Red Velvet Cake", cat:"plain-cakes", price:7500,
+    { id:"cake-redvelvet", name:"Red Velvet Cake", cat:"plain-cakes", price:6500,
       desc:"Classic red velvet with cream cheese frosting.",
       img:"redvelvetplain.jpg", hasInscription:true },
 
@@ -59,13 +62,13 @@
       desc:"Choose how many samosas, puff puffs, spring rolls and peppered meat you want.",
       img:"smallchops.jpg",
       items:[
-        { id:"samosa", label:"Samosa", unit:150 },
-        { id:"puffpuff", label:"Puff Puff", unit:120 },
-        { id:"springRoll", label:"Spring Roll", unit:180 },
-        { id:"pepperedMeat", label:"Peppered Meat", unit:250 }
+        { id:"samosa", label:"Samosa" },
+        { id:"puffpuff", label:"Puff Puff" },
+        { id:"springRoll", label:"Spring Roll" },
+        { id:"pepperedMeat", label:"Peppered Meat" }
       ],
       hasInscription:true },
-    { id:"doughnut", name:"Doughnut", cat:"savoury", price:300,
+    { id:"doughnut", name:"Doughnut (Pack of 6)", cat:"savoury", price:8000,
       desc:"Light, fried doughnut finished with sugar.",
       img:"doughnut.jpg" },
     { id:"meatpie", name:"Meat Pie", cat:"savoury", price:1200,
@@ -246,7 +249,7 @@
           <h3>${p.name}</h3>
           <p class="desc">${p.desc}</p>
           <div class="card-foot">
-            <span class="price">${fmt(p.price)}</span>
+            <span class="price">${p.flavourPrices ? `From ${fmt(Math.min(...Object.values(p.flavourPrices)))}` : fmt(p.price)}</span>
             <button type="button" class="add-btn" aria-label="Add ${p.name} to order" data-id="${p.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
             </button>
@@ -283,11 +286,14 @@
   }, { threshold:0.12 });
   document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
 
-  function getSmallChopsTotal(counts){
-    const prices = { samosa:150, puffpuff:120, springRoll:180, pepperedMeat:250 };
+  function getFlavourPrice(p, flavour){
+    if(p.flavourPrices && flavour && p.flavourPrices[flavour] != null) return p.flavourPrices[flavour];
+    return p.price;
+  }
+  function getSmallChopsCount(counts){
     return Object.keys(counts).reduce((total,key)=>{
       if(key === "other") return total;
-      return total + (counts[key] || 0) * prices[key];
+      return total + (counts[key] || 0);
     }, 0);
   }
   function buildSmallChopsMeta(counts, other){
@@ -360,15 +366,15 @@
       <button type="button" class="modal-close" id="pmClose" aria-label="Close">✕</button>
       <img src="${p.img}" alt="${p.name}" style="border-radius:14px; margin-bottom:14px;" loading="lazy">
       <h3>${p.name}</h3>
-      <div class="m-price">${isSmallChops ? fmt(getSmallChopsTotal(modalDraft.smallChops)) : fmt(p.price)}</div>
-      <div style="font-size:16px; font-weight:700; opacity:.98; margin-bottom:10px; color:var(--plum);">${isSmallChops ? `<strong>Price will be negotiated based on quantity.</strong>` : ""}</div>
+      ${!isSmallChops ? `<div class="m-price" id="mPrice">${fmt(getFlavourPrice(p, modalDraft.flavour))}</div>` : ""}
+      ${isSmallChops ? `<div style="font-size:14px; opacity:.8; line-height:1.5; margin-bottom:10px;">Just pick how many of each you'd like — no pricing here, we'll confirm on WhatsApp.</div>` : ""}
       <p style="font-size:13.5px; opacity:.75; line-height:1.5; margin-bottom:16px;">${p.desc}</p>
       ${isSmallChops ? `
       <div class="field-group">
         <label>Small Chops counts</label>
         ${p.items.map(item=>`
           <div class="qty-row" style="justify-content:space-between; margin-bottom:10px;">
-            <span>${item.label} (${fmt(item.unit)})</span>
+            <span>${item.label}</span>
             <div class="qty-stepper">
               <button type="button" class="item-minus" data-item="${item.id}">−</button>
               <span class="qty-val" id="${item.id}Val">${modalDraft.smallChops[item.id]}</span>
@@ -403,7 +409,7 @@
           </div>
         </div>
       </div>` : ""}
-      <button type="button" class="btn btn-primary" id="addToOrderBtn" style="width:100%; justify-content:center;">Add to order — <span id="lineTotal">${fmt(isSmallChops ? getSmallChopsTotal(modalDraft.smallChops) : p.price)}</span></button>
+      <button type="button" class="btn btn-primary" id="addToOrderBtn" style="width:100%; justify-content:center;">${isSmallChops ? `Add to order — <span id="lineTotal">${getSmallChopsCount(modalDraft.smallChops)} piece(s)</span>` : `Add to order — <span id="lineTotal">${fmt(getFlavourPrice(p, modalDraft.flavour))}</span>`}</button>
     `;
     document.getElementById("pmClose").addEventListener("click", closeProductModal);
     if(p.flavours){
@@ -412,6 +418,9 @@
           productModal.querySelectorAll("#flavourRow .opt").forEach(b=>b.classList.remove("active"));
           btn.classList.add("active");
           modalDraft.flavour = btn.dataset.flavour;
+          const priceEl = productModal.querySelector("#mPrice");
+          if(priceEl) priceEl.textContent = fmt(getFlavourPrice(p, modalDraft.flavour));
+          updateLineTotal();
         });
       });
     }
@@ -425,11 +434,15 @@
     }
     const lineTotal = productModal.querySelector("#lineTotal");
     function getModalTotal(){
-      return p.id === "small-chops" ? getSmallChopsTotal(modalDraft.smallChops) : p.price * modalDraft.qty;
+      return p.id === "small-chops" ? getSmallChopsCount(modalDraft.smallChops) : getFlavourPrice(p, modalDraft.flavour) * modalDraft.qty;
     }
     function updateLineTotal(){
       const total = getModalTotal();
-      lineTotal.textContent = total ? fmt(total) : "Select items";
+      if(p.id === "small-chops"){
+        lineTotal.textContent = total ? `${total} piece(s)` : "Select items";
+      }else{
+        lineTotal.textContent = total ? fmt(total) : "Select items";
+      }
     }
     if(p.id !== "small-chops"){
       const qtyVal = productModal.querySelector("#qtyVal");
@@ -477,10 +490,11 @@
   /* ---------- Cart logic ---------- */
   function addToCart(p, draft){
     const isSmallChops = p.id === "small-chops";
-    const packTotal = isSmallChops ? getSmallChopsTotal(draft.smallChops) : p.price;
-    if(isSmallChops && packTotal <= 0){
+    const chopsCount = isSmallChops ? getSmallChopsCount(draft.smallChops) : 0;
+    if(isSmallChops && chopsCount <= 0){
       return;
     }
+    const packTotal = isSmallChops ? 0 : getFlavourPrice(p, draft.flavour);
     const lineId = isSmallChops
       ? `${p.id}|${draft.smallChops.samosa}|${draft.smallChops.puffpuff}|${draft.smallChops.springRoll}|${draft.smallChops.pepperedMeat}|${draft.inscription||""}`
       : p.id + "|" + (draft.flavour||"") + "|" + (draft.inscription||"");
@@ -549,7 +563,7 @@
         <div style="flex:1;">
           <div class="oi-name">${l.qty} × ${l.name}</div>
           ${meta ? `<div class="oi-meta">${meta}</div>` : ""}
-          <div class="oi-meta">${isSmallChops ? `Estimated ${fmt(l.price)}` : `${fmt(l.price)} each`}</div>
+          ${!isSmallChops ? `<div class="oi-meta">${fmt(l.price)} each</div>` : ""}
         </div>
         <div class="qty-stepper">
           <button type="button" class="oi-minus" data-line="${l.lineId}">−</button>
@@ -655,7 +669,7 @@
       lines.push(`${l.qty} × ${l.name}`);
       if(l.flavour) lines.push(`- Flavour: ${l.flavour}`);
       if(l.inscription) lines.push(`- ${isSmallChops ? "Details" : "Inscription"}: ${l.inscription}`);
-      lines.push(`- ${isSmallChops ? "Estimated Price" : "Price"}: ${fmt(l.price)}`);
+      if(!isSmallChops) lines.push(`- Price: ${fmt(l.price)}`);
       lines.push("");
     });
     lines.push("*Special Instructions:*");
